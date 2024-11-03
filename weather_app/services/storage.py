@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import aioboto3
 import json
 import time
+import logging
 
 
 class StorageService(ABC):
@@ -33,6 +34,7 @@ class S3StorageService(StorageService):
         """
         timestamp = int(time.time())
         filename = f"{city}_{timestamp}.json"
+        logging.info(f"saving file: {filename} to S3 {self.s3_bucket} bucket")
         async with aioboto3.Session().client('s3') as s3_client:
             await s3_client.put_object(Bucket=self.s3_bucket, Key=filename, Body=json.dumps(data))
         return f"s3://{self.s3_bucket}/{filename}"
@@ -42,9 +44,12 @@ class S3StorageService(StorageService):
         List the files in S3 bucket
         :return: list of files
         """
+        logging.info(f"Listing files in  S3 {self.s3_bucket} bucket...")
         async with aioboto3.Session().client('s3') as s3_client:
             response = await s3_client.list_objects_v2(Bucket=self.s3_bucket)
-            return response.get('Contents', [])
+            files = response.get('Contents', [])
+            logging.debug(files)
+            return files
 
     async def get_file_content(self, filename) -> dict:
         """
@@ -52,6 +57,7 @@ class S3StorageService(StorageService):
         :param filename: filename in S3
         :return: json object
         """
+        logging.info(f"Reading file: {filename} from S3 {self.s3_bucket} bucket...")
         async with aioboto3.Session().client('s3') as s3_client:
             response = await s3_client.get_object(Bucket=self.s3_bucket, Key=filename)
             return json.loads(await response['Body'].read())
