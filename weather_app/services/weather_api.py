@@ -42,7 +42,7 @@ class OpenWeatherFetcher:
         latitude, longitude = await self.fetch_latitude_longitude(city)
 
         if latitude is None or longitude is None:
-            raise HTTPException(status_code=500, detail="Invalid City")
+            raise HTTPException(status_code=404, detail="Invalid City")
 
         url = f"https://api.open-meteo.com/v1/forecast"
         params = {
