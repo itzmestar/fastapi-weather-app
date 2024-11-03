@@ -19,7 +19,7 @@ class OpenWeatherFetcher:
             async with session.get(url) as response:
                 if response.status == 200:
                     data = await response.json()
-                    results = await data.get('results', [])
+                    results = data.get('results', [])
                     if results:
                         return results[0].get('latitude'), results[0].get('longitude')
                     else:
