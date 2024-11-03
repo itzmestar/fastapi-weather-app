@@ -1,5 +1,6 @@
 import aiohttp
 from fastapi import HTTPException
+import logging
 
 
 class OpenWeatherFetcher:
@@ -14,6 +15,7 @@ class OpenWeatherFetcher:
         :param city: name of the city
         :return: latitude, longitude
         """
+        logging.info("started")
         url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
@@ -23,8 +25,10 @@ class OpenWeatherFetcher:
                     if results:
                         return results[0].get('latitude'), results[0].get('longitude')
                     else:
+                        logging.error(f"Empty response.")
                         return None, None
                 else:
+                    logging.error(f"Status code: {response.status}")
                     return None, None
 
     async def fetch_weather(self, city: str) -> dict:
@@ -34,6 +38,7 @@ class OpenWeatherFetcher:
         :return: weather information
         """
         # Fetch latitude, longitude for city
+        logging.info(f"fetching latitude & longitude for {city}")
         latitude, longitude = await self.fetch_latitude_longitude(city)
 
         if latitude is None or longitude is None:
@@ -45,9 +50,13 @@ class OpenWeatherFetcher:
             'longitude': longitude,
             'hourly': 'temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m'
         }
+        logging.info(f"Fetching weather for lat:{latitude} & lon:{longitude}")
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params=params) as response:
                 if response.status == 200:
-                    return await response.json()
+                    data = await response.json()
+                    logging.debug(data)
+                    return data
                 else:
+                    logging.error(f"Status code: {response.status}")
                     raise HTTPException(status_code=response.status, detail="Failed to fetch weather data")
