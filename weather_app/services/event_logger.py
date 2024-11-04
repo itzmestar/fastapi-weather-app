@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import aioboto3
 import logging
+from weather_app.config.constants import AWS_REGION
 
 
 class EventLogger(ABC):
@@ -18,7 +19,7 @@ class DynamoEventLogger(EventLogger):
     async def log_event(self, city: str, timestamp: int, storage_url: str):
         logging.info(f"Storing Event in dynamodb {self.dynamodb_table} table.")
         logging.debug(f"city={city}, timestamp={timestamp}, S3_url={storage_url}")
-        async with aioboto3.Session().client('dynamodb') as dynamodb:
+        async with aioboto3.Session().client('dynamodb', region_name=AWS_REGION) as dynamodb:
             await dynamodb.put_item(
                 TableName=self.dynamodb_table,
                 Item={
