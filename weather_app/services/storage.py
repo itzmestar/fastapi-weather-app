@@ -47,9 +47,12 @@ class S3StorageService(StorageService):
         logging.info(f"Listing files in  S3 {self.s3_bucket} bucket...")
         async with aioboto3.Session().client('s3') as s3_client:
             response = await s3_client.list_objects_v2(Bucket=self.s3_bucket)
-            files = response.get('Contents', [])
-            logging.debug(files)
-            return files
+            file_objects = response.get('Contents', [])
+            if file_objects:
+                files = [obj['Key'] for obj in file_objects]
+                logging.debug(files)
+                return files
+            return []
 
     async def get_file_content(self, filename) -> dict:
         """
