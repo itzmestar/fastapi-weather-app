@@ -41,9 +41,13 @@ cd fastapi-weather-app
 
 3. Set these environment variables:
 
-`AWS_ACCESS_KEY_ID,
+```
+AWS_REGION,
+AWS_ACCESS_KEY_ID,
 AWS_SECRET_ACCESS_KEY,
-S3_BUCKET`
+S3_BUCKET,
+DYNAMODB_TABLE
+```
 
 4. Install requirements
 
