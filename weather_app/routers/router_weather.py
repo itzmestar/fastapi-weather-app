@@ -22,9 +22,16 @@ async def get_weather(
     """
     Get weather info for the specified city
     """
+    # make city name case insensitive
+    city = city.lower()
     try:
         weather_data = await weather_service.get_weather(city)
         return WeatherResponse(city=city, weather=weather_data)
+    except HTTPException as e:
+        if e.status_code == 404:
+            raise e
+        else:
+            raise HTTPException(status_code=500, detail="Something went wrong")
     except Exception as e:
         logging.exception(e)
         raise HTTPException(status_code=500, detail="Something went wrong")
