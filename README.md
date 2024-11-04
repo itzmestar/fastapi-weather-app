@@ -78,5 +78,8 @@ docker build -t fastapi-weather-app .
 
 ### Run docker container
 ```
-docker run -e AWS_ACCESS_KEY_ID=AxxxxxxxxB -e AWS_SECRET_ACCESS_KEY=xxxxxxx -e S3_BUCKET=xxxxxx -p 8000:8000 fastapi-weather-app
+docker run -e AWS_REGION=xx-xxxxx-x -e AWS_ACCESS_KEY_ID=AxxxxxxxxB -e AWS_SECRET_ACCESS_KEY=xxxxxxx -e S3_BUCKET=xxxxxx -e DYNAMODB_TABLE=xxxxxxxx -p 8000:8000 fastapi-weather-app
 ```
+
+### Swagger GUI
+Swagger GUI can be accessed at http://127.0.0.1:8000/docs
